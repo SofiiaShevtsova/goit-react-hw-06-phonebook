@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import Section from './Section/Section';
@@ -17,10 +17,6 @@ export const App = () => {
       ),
     [filterContacts, contactsState]
   );
-
-  useEffect(() => {
-    localStorage.setItem('contactsList', JSON.stringify(contactsState));
-  }, [contactsState]);
 
   return (
     <div

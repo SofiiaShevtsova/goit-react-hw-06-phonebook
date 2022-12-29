@@ -10,6 +10,10 @@ export const phonebookSlice = createSlice({
   initialState,
   reducers: {
     addContactsToState: (state, action) => {
+      if (state.contacts.find(elem => elem.name === action.payload.name)) {
+      alert('You have this contacts');
+      return state;
+    }
       state.contacts = [...state.contacts, action.payload];
     },
     removeContactFromState: (state, action) => {

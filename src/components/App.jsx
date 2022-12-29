@@ -1,49 +1,29 @@
-import { useEffect, useState, useMemo, createContext } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import Section from './Section/Section';
 import Contacts from './Contacts/Contacts';
 import FormAddContact from './FormAddContact/FormAddContact';
 import FilterContact from './FilterContact/FilterContact';
 
-export const ContextContacts = createContext(null);
-
 export const App = () => {
-  const [contacts, setContacts] = useState(
-    () => JSON.parse(localStorage.getItem('contactsList')) || []
-  );
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('contactsList', JSON.stringify(contacts));
-  }, [contacts]);
+  const contactsState = useSelector(state => state.phonebook.contacts);
+  const filterContacts = useSelector(state => state.phonebook.filter);
 
   const contactToFind = useMemo(
-    () => contacts.filter(elem => elem.name.toLowerCase().includes(filter)),
-    [filter, contacts]
+    () =>
+      contactsState.filter(elem =>
+        elem.name.toLowerCase().includes(filterContacts)
+      ),
+    [filterContacts, contactsState]
   );
 
-  const addContact = contact => {
-    if (contacts.find(elem => elem.name === contact.name)) {
-      alert('You have this contacts');
-      return;
-    }
-    setContacts(prevContacts => [...prevContacts, contact]);
-  };
-
-  const findContactsByName = event =>
-    setFilter(event.target.value.trim().toLowerCase());
-
-  const removeContact = event => {
-    const idContactToRemove = event.target.attributes.id.nodeValue;
-    const arrayContacts = contacts.filter(
-      elem => elem.id !== idContactToRemove
-    );
-    setContacts(arrayContacts);
-  };
+  useEffect(() => {
+    localStorage.setItem('contactsList', JSON.stringify(contactsState));
+  }, [contactsState]);
 
   return (
-    <ContextContacts.Provider
-      value={removeContact}
+    <div
       style={{
         height: '100%',
         display: 'flex',
@@ -53,15 +33,12 @@ export const App = () => {
       }}
     >
       <Section title={'Phonebook'}>
-        <FormAddContact addContactOnSubmit={addContact} />
+        <FormAddContact />
       </Section>
       <Section title={'Contacts'}>
-        <FilterContact
-          findContactsByName={findContactsByName}
-          filters={filter}
-        />
+        <FilterContact />
         <Contacts contacts={contactToFind} />
       </Section>
-    </ContextContacts.Provider>
+    </div>
   );
 };

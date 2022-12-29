@@ -1,4 +1,5 @@
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { addContactsToState } from 'redux/phonebookSlice';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -29,7 +30,8 @@ const SignupSchema = Yup.object().shape({
 });
 
 const FormAddContact = props => {
-  const { addContactOnSubmit } = props;
+  const dispatch = useDispatch();
+
   return (
     <div>
       <Formik
@@ -39,11 +41,13 @@ const FormAddContact = props => {
         }}
         validationSchema={SignupSchema}
         onSubmit={(values, actions) => {
-          addContactOnSubmit({
-            name: values.name.trim(),
-            id: `${nanoid()}`,
-            number: values.number.trim(),
-          });
+          dispatch(
+            addContactsToState({
+              name: values.name.trim(),
+              id: `${nanoid()}`,
+              number: values.number.trim(),
+            })
+          );
           actions.setSubmitting(false);
           actions.resetForm();
         }}
@@ -71,10 +75,6 @@ const FormAddContact = props => {
       </Formik>
     </div>
   );
-};
-
-FormAddContact.propTypes = {
-  addContactOnSubmit: PropTypes.func.isRequired,
 };
 
 export default FormAddContact;
